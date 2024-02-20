@@ -1,22 +1,22 @@
 use regex::Regex;
-use serde::Serialize;
 use std::{collections::HashSet, error::Error};
 
 const PAGE_URL: &str = "http://taharut.org/imo/";
 
-#[derive(Hash, Eq, PartialEq, Clone, Serialize)]
+#[derive(Hash, Eq, PartialEq, Clone, Debug)]
 pub struct Document {
     pub name: String,
+    pub author: String,
     pub url: String,
 }
 
 impl Document {
-    pub fn build(name: String, url: String) -> Self {
-        Document { name, url }
+    pub fn build(name: String, author: String, url: String) -> Self {
+        Document { name, author, url }
     }
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone)]
 pub struct Documents(HashSet<Document>);
 
 impl Documents {
@@ -32,18 +32,15 @@ impl Documents {
     pub fn update(&mut self) -> Result<(), Box<dyn Error>> {
         let res = ureq::get(PAGE_URL).call()?.into_string()?;
 
-        let re = Regex::new(r#"([^"]*\.pdf)"#)?;
+        let re = Regex::new(r#"<a href = "([^"]+)">([^<]+)</a>([^<]+)<br>"#)?;
 
         self.0 = re
-            .find_iter(&res)
-            .map(|d| {
+            .captures_iter(&res)
+            .map(|c| {
                 Document::build(
-                    d.as_str()
-                        .strip_suffix(".pdf")
-                        .unwrap()
-                        .replace('_', " ")
-                        .to_lowercase(),
-                    PAGE_URL.to_string() + d.as_str(),
+                    c.extract::<3>().1[1].trim().to_string(),
+                    c.extract::<3>().1[2].trim().to_string(),
+                    PAGE_URL.to_string() + c.extract::<3>().1[0],
                 )
             })
             .collect();

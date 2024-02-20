@@ -25,15 +25,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
             Ok(_) => {
                 for d in docs.get().difference(&old_docs) {
-                    let message = format!(
-                        "The document '{}' is now available.\nDownload URL: '{}'",
-                        d.name, d.url
-                    );
+                    let message = format!("Name: {} {}\nURL: '{}'", d.author, d.name, d.url);
 
                     info!("{}", message);
 
                     Notification::new()
-                        .summary("Taharut")
+                        .summary("Taharut: New document available!")
                         .body(&message)
                         .show()?;
                 }
