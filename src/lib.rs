@@ -4,28 +4,28 @@ use std::{collections::HashSet, error::Error};
 const PAGE_URL: &str = "http://taharut.org/imo/";
 
 #[derive(Hash, Eq, PartialEq, Clone, Debug)]
-pub struct Document {
+pub struct Exercise {
     pub name: String,
     pub author: String,
     pub url: String,
 }
 
-impl Document {
+impl Exercise {
     pub fn build(name: String, author: String, url: String) -> Self {
-        Document { name, author, url }
+        Exercise { name, author, url }
     }
 }
 
 #[derive(Clone)]
-pub struct Documents(HashSet<Document>);
+pub struct Exercises(HashSet<Exercise>);
 
-impl Documents {
+impl Exercises {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
-        Documents(HashSet::new())
+        Exercises(HashSet::new())
     }
 
-    pub fn get(&self) -> &HashSet<Document> {
+    pub fn get(&self) -> &HashSet<Exercise> {
         &self.0
     }
 
@@ -38,7 +38,7 @@ impl Documents {
             .captures_iter(&res)
             .map(|c| {
                 let c = c.extract::<3>().1;
-                Document::build(
+                Exercise::build(
                     c[1].trim().to_string(),
                     c[2].trim().to_string(),
                     PAGE_URL.to_string() + c[0],

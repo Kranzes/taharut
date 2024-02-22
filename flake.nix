@@ -6,7 +6,7 @@
   };
 
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } ({ moduleWithSystem, ... }: {
       systems = [ "x86_64-linux" ];
       imports = [ inputs.treefmt-nix.flakeModule ];
 
@@ -51,5 +51,12 @@
             programs.rustfmt.enable = true;
           };
         };
-    };
+
+      flake.homeManagerModules.taharut = moduleWithSystem (
+        perSystem@{ config }: _: {
+          imports = [ ./nix/home-manager.nix ];
+          services.taharut.package = perSystem.config.packages.taharut;
+        }
+      );
+    });
 }

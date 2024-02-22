@@ -4,7 +4,7 @@ use clap::Parser;
 use cli::Args;
 use log::{info, warn};
 use notify_rust::Notification;
-use taharut::Documents;
+use taharut::Exercises;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
@@ -13,32 +13,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter_level(log::LevelFilter::Info)
         .init();
 
-    let mut docs = Documents::new();
+    let mut exercises = Exercises::new();
 
     loop {
-        let old_docs = docs.get().clone();
+        let old_exercise = exercises.get().clone();
 
-        match docs.update() {
-            Ok(_) if old_docs.is_empty() => info!("Successfully updated initial documents"),
-            Err(e) if old_docs.is_empty() => {
-                warn!("Failed to update initial documents with error: {}", e)
+        match exercises.update() {
+            Ok(_) if old_exercise.is_empty() => info!("Successfully updated initial exercises"),
+            Err(e) if old_exercise.is_empty() => {
+                warn!("Failed to update initial exercises with error: {}", e)
             }
             Ok(_) => {
-                for d in docs.get().difference(&old_docs) {
+                for d in exercises.get().difference(&old_exercise) {
                     let message = format!("Name: {} {}\nURL: '{}'", d.author, d.name, d.url);
 
                     info!("{}", message);
 
                     Notification::new()
-                        .summary("Taharut: New document available!")
+                        .summary("Taharut: New exercise available!")
                         .body(&message)
                         .show()?;
                 }
             }
-            Err(e) => warn!("Failed to fetch documents with error: {}", e),
+            Err(e) => warn!("Failed to fetch exercises with error: {}", e),
         }
 
-        mem::drop(old_docs);
+        mem::drop(old_exercise);
 
         sleep(Duration::from_secs(args.interval as u64 * 60));
     }
