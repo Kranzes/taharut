@@ -27,9 +27,7 @@ in
       };
       Service = {
         Type = "simple";
-        ExecStart = ''
-          ${lib.getExe' cfg.package "taharut"} --interval ${toString cfg.settings.interval}
-        '';
+        ExecStart = "${cfg.package}/bin/taharut --interval ${toString cfg.settings.interval}";
         Restart = "on-failure";
       };
       Install.WantedBy = [ "graphical-session.target" ];
