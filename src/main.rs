@@ -1,4 +1,4 @@
-use std::{error::Error, thread::sleep, time::Duration};
+use std::{error::Error, mem, thread::sleep, time::Duration};
 mod cli;
 use clap::Parser;
 use cli::Args;
@@ -37,6 +37,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
             Err(e) => warn!("Failed to fetch documents with error: {}", e),
         }
+
+        mem::drop(old_docs);
 
         sleep(Duration::from_secs(args.interval as u64 * 60));
     }

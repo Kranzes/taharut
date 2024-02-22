@@ -37,10 +37,11 @@ impl Documents {
         self.0 = re
             .captures_iter(&res)
             .map(|c| {
+                let c = c.extract::<3>().1;
                 Document::build(
-                    c.extract::<3>().1[1].trim().to_string(),
-                    c.extract::<3>().1[2].trim().to_string(),
-                    PAGE_URL.to_string() + c.extract::<3>().1[0],
+                    c[1].trim().to_string(),
+                    c[2].trim().to_string(),
+                    PAGE_URL.to_string() + c[0],
                 )
             })
             .collect();
