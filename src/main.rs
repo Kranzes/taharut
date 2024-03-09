@@ -54,6 +54,7 @@ fn main() {
                     if let Err(e) = Notification::new()
                         .summary("Taharut: New exercise available!")
                         .body(&message)
+                        .timeout(0)
                         .show()
                     {
                         warn!("Failed to show notification: {}", e);
